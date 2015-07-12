@@ -10,11 +10,7 @@ function mergeSameGoods(result, inputs) {
   var item = inputs.split('-');
   for (var i = 0; i < result.length; i++) {
     if (-1 !== result[i].barcode.indexOf(item[0])) {
-      var count = 1;
-      if (item.length > 1) {
-        count = item[1];
-      }
-      result[i].count += count;
+      result[i].count += item[1] || 1;
       break;
     }
   }
@@ -22,11 +18,7 @@ function mergeSameGoods(result, inputs) {
     for (var k = 0; k < items.length; k++) {
       if (item[0] == items[k].barcode) {
         result.push(items[k]);
-        var count = 1;
-        if (item.length > 1) {
-          count = item[1];
-        }
-        result[i].count = count;
+        result[i].count = item[1] || 1;
         return;
       }
     }
