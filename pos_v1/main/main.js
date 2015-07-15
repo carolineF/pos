@@ -9,20 +9,27 @@ function mergeSameGoods(result, inputs) {
   var items = loadAllItems();
   var item = inputs.split('-');
   for (var i = 0; i < result.length; i++) {
-    if (-1 !== result[i].barcode.indexOf(item[0])) {
+    if (item[0] == result[i].barcode) {
       result[i].count += item[1] || 1;
       break;
     }
   }
   if (i >= result.length) {
-    for (var k = 0; k < items.length; k++) {
-      if (item[0] == items[k].barcode) {
-        result.push(items[k]);
-        result[i].count = item[1] || 1;
-        return;
-      }
+    var index = findIndexOfSameItem(items, item[0]);
+    if (index !== -1) {
+      result.push(items[index]);
+      result[i].count = item[1] || 1;
+      return;
     }
   }
+}
+function findIndexOfSameItem(items, inputs) {
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].barcode === inputs) {
+      return i;
+    }
+  }
+  return -1;
 }
 function processDiscountGoods(result) {
   var discount = loadPromotions();

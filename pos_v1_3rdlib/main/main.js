@@ -9,7 +9,7 @@ function mergeSameGoods(result, inputs) {
   var items = loadAllItems();
   var item = inputs.split('-');
   for (var i = 0; i < result.length; i++) {
-    if (_.includes(result[i].barcode, item[0])) {
+    if (item[0] == result[i].barcode) {
       result[i].count += item[1] || 1;
       return;
     }
@@ -30,17 +30,17 @@ function print(inputs) {
   var discountGoods = [];
   var discount = loadPromotions();
   var items = discount[0].barcodes;
-  for (var i = 0; i < inputs.length; i++) {
-    var count = inputs[i].count;
-   if(_.includes(items,inputs[i].barcode) && inputs[i].count>2){
-     discountGoods.push(inputs[i]);
-     count -= 1;
-   }
-    sum += count * inputs[i].price;
-    result += '名称：' + inputs[i].name + '，数量：' + inputs[i].count +
-    inputs[i].unit + '，单价：' + (inputs[i].price).toFixed(2) + '(元)' +
-    '，小计：' + (count * inputs[i].price ).toFixed(2) + '(元)\n';
-  }
+  _.forEach(inputs, function(n){
+    var count = n.count;
+    if(_.includes(items,n.barcode) && n.count>2){
+      discountGoods.push(n);
+      count -= 1;
+    }
+    sum += count * n.price;
+    result += '名称：' + n.name + '，数量：' + n.count +
+    n.unit + '，单价：' + (n.price).toFixed(2) + '(元)' +
+    '，小计：' + (count * n.price ).toFixed(2) + '(元)\n';
+  });
   result += '----------------------\n' + '挥泪赠送商品：\n名称：' + discountGoods[0].name + '，数量：' +
   1 + '瓶\n名称：' + discountGoods[1].name + '，数量：' + 1 + '袋\n';
   result += '----------------------\n总计：' + sum.toFixed(2) +
