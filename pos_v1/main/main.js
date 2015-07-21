@@ -101,9 +101,7 @@ function getItemsString(cartItems) {
   var itemsString = '';
 
   cartItems.forEach(function (cartItem) {
-
     var count = processPromotions(cartItem);
-
     itemsString +=
       '名称：' + cartItem.item.name +
       '，数量：' + cartItem.count + cartItem.item.unit +
@@ -132,7 +130,7 @@ function getPromotionsString(cartItems) {
 function processPromotions(cartItem) {
   var promotions = findPromotions(cartItem);
   var count = cartItem.count;
-  if (promotions) {
+  if (promotions && count > 2) {
     count--;
   }
   return count;
