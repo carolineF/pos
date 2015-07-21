@@ -1,64 +1,152 @@
-function printReceipt(inputs) {
-  var result = [];
-  for (var i = 0; i < inputs.length; i++) {
-    mergeSameGoods(result, inputs[i]);
-  }
-  print(result);
+function printReceipt(barcodes) {
+
+  var items = getItems(barcodes);
+  var cartItems = getCartItems(items);
+
+  var receipt =
+    '***<没钱赚商店>收据***\n' +
+    getItemsString(cartItems) +
+    '----------------------\n' +
+    '挥泪赠送商品：\n' +
+    getPromotionsString(cartItems) +
+    '----------------------\n' +
+    '总计：' + formatPrice(getAmount(cartItems)) + '(元)\n' +
+    '节省：' + formatPrice(getDiscount(cartItems)) + '(元)\n' +
+    '**********************';
+
+  console.log(receipt);
 }
-function mergeSameGoods(result, inputs) {
-  var items = loadAllItems();
-  var item = inputs.split('-');
-  for (var i = 0; i < result.length; i++) {
-    if (item[0] == result[i].barcode) {
-      result[i].count += item[1] || 1;
-      break;
-    }
-  }
-  if (i >= result.length) {
-    var index = findIndexOfSameItem(items, item[0]);
-    if (index !== -1) {
-      result.push(items[index]);
-      result[i].count = item[1] || 1;
-      return;
-    }
-  }
-}
-function findIndexOfSameItem(items, inputs) {
-  for (var i = 0; i < items.length; i++) {
-    if (items[i].barcode === inputs) {
-      return i;
-    }
-  }
-  return -1;
-}
-function processDiscountGoods(result) {
-  var discount = loadPromotions();
-  var items = discount[0].barcodes;
-  for (var i = 0; i < items.length; i++) {
-    if (result.barcode === items[i] && result.count > 2) {
-      return result;
-    }
-  }
-}
-function print(inputs) {
-  var result = '***<没钱赚商店>收据***\n';
-  var sum = 0;
-  var discountGoods = [];
-  for (var i = 0; i < inputs.length; i++) {
-    var item = processDiscountGoods(inputs[i]);
-    var count = inputs[i].count;
+
+function getItems(barcodes) {
+  var allItems = loadAllItems();
+  var items = [];
+
+  barcodes.forEach(function (barcode) {
+
+    var item = findItem(allItems, barcode);
     if (item) {
-      discountGoods.push(item);
-      count -= 1;
+      items.push(item);
     }
-    sum += count * inputs[i].price;
-    result += '名称：' + inputs[i].name + '，数量：' + inputs[i].count +
-    inputs[i].unit + '，单价：' + (inputs[i].price).toFixed(2) + '(元)' +
-    '，小计：' + (count * inputs[i].price ).toFixed(2) + '(元)\n';
+  });
+  return items;
+}
+
+function findItem(items, barcode) {
+  var itemOne = null;
+  items.forEach(function (item) {
+    if (item.barcode === barcode.split('-')[0]) {
+      item.count = barcode.split('-')[1];
+      itemOne = item;
+    }
+  });
+  return itemOne;
+}
+
+function getCartItems(items) {
+  var cartItems = [];
+
+  items.forEach(function (item) {
+    var cartItem = findCartItem(cartItems, item);
+    var count = 1;
+    if (item.count) {
+      count = item.count;
+    }
+    if (cartItem) {
+      cartItem.count += count;
+    } else {
+      cartItems.push({
+        item: item,
+        count: count
+      })
+    }
+  })
+  return cartItems;
+}
+
+function findCartItem(cartItems, item) {
+
+  for (var i = 0; i < cartItems.length; i++) {
+    if (cartItems[i].item.barcode === item.barcode) {
+      return cartItems[i];
+    }
   }
-  result += '----------------------\n' + '挥泪赠送商品：\n名称：' + discountGoods[0].name + '，数量：' +
-  1 + '瓶\n名称：' + discountGoods[1].name + '，数量：' + 1 + '袋\n';
-  result += '----------------------\n总计：' + sum.toFixed(2) +
-  '(元)\n节省：' + (discountGoods[0].price + discountGoods[1].price).toFixed(2) + '(元)\n**********************';
-  console.log(result);
+}
+
+function getSubTotal(count, price) {
+  return count * price;
+}
+
+function getDiscount(cartItems) {
+  var discount = 0;
+  cartItems.forEach(function (cartItem) {
+    var promotionItem = findPromotions(cartItem);
+    if (promotionItem) {
+      discount += promotionItem.price;
+    }
+  })
+  return discount;
+}
+
+function getAmount(cartItems) {
+  var amount = 0;
+  cartItems.forEach(function (cartItem) {
+    var count = processPromotions(cartItem);
+    amount += getSubTotal(count, cartItem.item.price);
+  });
+
+  return amount;
+}
+
+function getItemsString(cartItems) {
+  var itemsString = '';
+
+  cartItems.forEach(function (cartItem) {
+
+    var count = processPromotions(cartItem);
+
+    itemsString +=
+      '名称：' + cartItem.item.name +
+      '，数量：' + cartItem.count + cartItem.item.unit +
+      '，单价：' + formatPrice(cartItem.item.price) +
+      '(元)，小计：' + formatPrice(getSubTotal(count, cartItem.item.price)) + '(元)\n';
+  });
+
+  return itemsString;
+}
+
+function getPromotionsString(cartItems) {
+  var promotionString = '';
+  cartItems.forEach(function (cartItem) {
+    var promotionItem = findPromotions(cartItem);
+    if (promotionItem) {
+      promotionString +=
+        '名称：' + promotionItem.name +
+        '，数量：' + 1 + promotionItem.unit +
+        '\n';
+    }
+  });
+
+  return promotionString;
+}
+
+function processPromotions(cartItem) {
+  var promotions = findPromotions(cartItem);
+  var count = cartItem.count;
+  if (promotions) {
+    count--;
+  }
+  return count;
+}
+
+function findPromotions(cartItem) {
+  var promotionsBarcode = loadPromotions()[0].barcodes;
+  for (var i = 0; i < promotionsBarcode.length; i++) {
+    if (promotionsBarcode[i] == cartItem.item.barcode) {
+      return cartItem.item;
+    }
+  }
+}
+
+function formatPrice(price) {
+  return price.toFixed(2);
 }

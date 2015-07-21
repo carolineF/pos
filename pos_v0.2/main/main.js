@@ -1,6 +1,7 @@
-function printReceipt(itemLists) {
+function printReceipt(barcodes) {
 
-  var cartItems = getCartItems(itemLists);
+  var items = getItems(barcodes);
+  var cartItems = getCartItems(items);
 
   var receipt =
     '***<没钱赚商店>收据***\n' +
@@ -12,15 +13,37 @@ function printReceipt(itemLists) {
   console.log(receipt);
 }
 
-function getCartItems(itemLists) {
+function getItems(barcodes) {
+  var allItems = loadAllItems();
+  var items = [];
+
+  barcodes.forEach(function(barcode){
+    var item = findItem(allItems, barcode);
+    if(item) {
+      items.push(item);
+    }
+  });
+  return items;
+}
+
+function findItem(items, barcode) {
+  var itemOne = null;
+  items.forEach(function(item){
+    if(item.barcode === barcode) {
+      itemOne = item;
+    }
+  });
+  return itemOne;
+}
+
+function getCartItems(items) {
   var cartItems = [];
 
-  itemLists.forEach(function (itemList) {
-    var cartItem = findCartItem(cartItems, itemList);
+  items.forEach(function (item) {
+    var cartItem = findCartItem(cartItems, item);
     if (cartItem) {
       cartItem.count++;
     } else {
-      var item = getItemByItemList(itemList);
       cartItems.push({
         item: item,
         count: 1
@@ -30,20 +53,10 @@ function getCartItems(itemLists) {
   return cartItems;
 }
 
-function getItemByItemList(itemList) {
-  var allItems = loadAllItems();
-
-  for(var i = 0; i < allItems.length; i++) {
-    if(allItems[i].barcode === itemList) {
-      return allItems[i];
-    }
-  }
-}
-
-function findCartItem(cartItems, itemList) {
+function findCartItem(cartItems, item) {
 
   for(var i = 0; i < cartItems.length; i++) {
-    if(cartItems[i].item.barcode === itemList) {
+    if(cartItems[i].item.barcode === item.barcode) {
       return cartItems[i];
     }
   }
