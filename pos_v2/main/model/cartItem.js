@@ -10,7 +10,7 @@ CartItem.prototype.getBarcode = function (tag) {
   return barcode;
 };
 
-var findCartItem = function (cartItems, barcode) {
+CartItem.prototype.findCartItem = function (cartItems, barcode) {
 
   for (var i = 0; i < cartItems.length; i++) {
     if (cartItems[i].item.barcode === barcode) {
@@ -21,7 +21,7 @@ var findCartItem = function (cartItems, barcode) {
 
 CartItem.prototype.addToCartItems = function (cartItems, barcode) {
 
-  var cartItem = findCartItem(cartItems, barcode);
+  var cartItem = this.findCartItem(cartItems, barcode);
   if (cartItem) {
     cartItem.count += this.count;
   } else {

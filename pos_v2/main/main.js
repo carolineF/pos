@@ -6,5 +6,6 @@ function printReceipt(tags) {
     cartItems = new CartItem().createCartItem(cartItems, tag);
 
   });
-console.log(cartItems);
+  var receipt = new Receipt().createReceipt(cartItems);
+  console.log(receipt);
 }
