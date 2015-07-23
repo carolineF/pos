@@ -4,13 +4,13 @@ function CartItem(item, count, promotionCount) {
   this.promotionCount = promotionCount || 0;
 }
 
-CartItem.prototype.getBarcode = function (tag) {
+CartItem.prototype.getBarcode = function(tag) {
   var barcode = tag.split('-')[0];
   this.count = tag.split('-')[1] || 1;
   return barcode;
 };
 
-CartItem.prototype.findCartItem = function (cartItems, barcode) {
+CartItem.prototype.findCartItem = function(cartItems, barcode) {
 
   for (var i = 0; i < cartItems.length; i++) {
     if (cartItems[i].item.barcode === barcode) {
@@ -19,9 +19,8 @@ CartItem.prototype.findCartItem = function (cartItems, barcode) {
   }
 };
 
-CartItem.prototype.addToCartItems = function (cartItems, barcode) {
+CartItem.prototype.addToCartItems = function(cartItems, cartItem) {
 
-  var cartItem = this.findCartItem(cartItems, barcode);
   if (cartItem) {
     cartItem.count += this.count;
   } else {
@@ -34,7 +33,7 @@ CartItem.prototype.addToCartItems = function (cartItems, barcode) {
   return cartItems;
 };
 
-CartItem.prototype.findItem = function (barcode) {
+CartItem.prototype.findItem = function(barcode) {
   var allItems = loadAllItems();
 
   for (var i = 0; i < allItems.length; i++) {
@@ -44,12 +43,14 @@ CartItem.prototype.findItem = function (barcode) {
   }
 };
 
-CartItem.prototype.createCartItem = function (cartItems, tag) {
+CartItem.prototype.createCartItems = function(cartItems, tag) {
 
   var barcode = this.getBarcode(tag);
 
   this.item = this.findItem(barcode);
 
-  return this.addToCartItems(cartItems, barcode);
+  var cartItem = this.findCartItem(cartItems, barcode);
+
+  return this.addToCartItems(cartItems, cartItem);
 
 };

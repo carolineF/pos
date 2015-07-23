@@ -70,3 +70,14 @@ POS收银机 版本：v2
 3. 可使用```loadPromotions()```方法获取全部的促销信息，该方法返回结果为一个包含有促销信息对象的数组；
 4. 每一个促销信息对象的结构请见```main/model/promotion.js```；
 5. 应学习并善于使用各种流行浏览器所附带的开发人员工具中的控制台（Console）功能。
+
+
+var years = [1990, 1990, 2000, 2000, 1990, 2000, 2010];
+var array = [];
+ years.forEach(function(year){
+  if(array.indexOf(year)=== -1){
+    array.push(year);
+    
+  }
+ });
+ console.log(array);

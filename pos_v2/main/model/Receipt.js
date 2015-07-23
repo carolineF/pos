@@ -3,18 +3,20 @@ var Receipt = (function() {
 
   }
 
-  Receipt.prototype.processPromotions = function(cartItems, barcodes) {
+  Receipt.prototype.getPromotionCount = function(cartItems, barcodes) {
     cartItems.forEach(function(cartItem) {
       var isPromotion = barcodes.indexOf(cartItem.item.barcode) != -1;
       cartItem.promotionCount = isPromotion ? Math.floor(cartItem.count / 3) : 0;
     });
   };
 
-  Receipt.prototype.choosePromotion = function(cartItems) {
+  Receipt.prototype.processPromotions = function(cartItems) {
+
     var promotions = loadPromotions();
+
     for(var i = 0; i < promotions.length; i++) {
       if(promotions[i].type === 'BUY_TWO_GET_ONE_FREE') {
-        this.processPromotions(cartItems, promotions[i].barcodes);
+        this.getPromotionCount(cartItems, promotions[i].barcodes);
       }
     }
   };
@@ -43,7 +45,7 @@ var Receipt = (function() {
         '名称：' + cartItem.item.name +
         '，数量：' + cartItem.count + cartItem.item.unit +
         '，单价：' + formatPrice(cartItem.item.price) +
-        '(元)，小计：' + formatPrice(getSubTotal(cartItem.count-cartItem.promotionCount, cartItem.item.price)) + '(元)\n';
+        '(元)，小计：' + formatPrice(getSubTotal(cartItem.count - cartItem.promotionCount, cartItem.item.price)) + '(元)\n';
     });
 
     return itemsString;
@@ -51,6 +53,7 @@ var Receipt = (function() {
 
   Receipt.prototype.getPromotionString = function(cartItems) {
     var promotionString = '';
+
     cartItems.forEach(function(cartItem) {
       if(cartItem.promotionCount) {
         promotionString +=
@@ -88,10 +91,12 @@ var Receipt = (function() {
   }
 
   Receipt.prototype.createReceipt = function(cartItems) {
-    this.choosePromotion(cartItems);
-    var currentTime = this.getCurrentTime();
+
+    this.processPromotions(cartItems);
+
     var receiptString = '***<没钱赚商店>收据***\n' +
-      '打印时间：' + currentTime + '\n----------------------\n' +
+      '打印时间：' + this.getCurrentTime() +
+      '\n----------------------\n' +
       this.getItemString(cartItems) +
       '----------------------\n挥泪赠送商品：\n' +
       this.getPromotionString(cartItems) +
@@ -101,5 +106,6 @@ var Receipt = (function() {
       '**********************';
     return receiptString;
   };
+
   return Receipt;
 })();
