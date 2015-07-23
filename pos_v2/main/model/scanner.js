@@ -1,3 +1,12 @@
-/**
- * Created by vermouth on 7/23/15.
- */
+function Scanner() {
+
+};
+
+Scanner.prototype.scan = function(tag) {
+  var barcode = tag.split('-')[0];
+  var count = parseFloat(tag.split('-')[1]) || 1;
+
+  var item = Item.findItem(barcode);
+
+  return new CartItem(item, count);
+};

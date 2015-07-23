@@ -88,7 +88,7 @@ function getCartItems(items) {
         item: item.item,
         count: item.count,
         promotionCount : 0
-      })
+      });
     }
   });
   return cartItems;
