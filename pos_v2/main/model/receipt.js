@@ -34,6 +34,7 @@ var Receipt = (function() {
       minute = dateDigitToString(currentDate.getMinutes()),
       second = dateDigitToString(currentDate.getSeconds()),
       formattedDateString = year + '年' + month + '月' + date + '日 ' + hour + ':' + minute + ':' + second;
+
     return formattedDateString;
   };
 
@@ -61,6 +62,7 @@ var Receipt = (function() {
           '，数量：' + cartItem.promotionCount + cartItem.item.unit + '\n';
       }
     });
+
     return promotionString;
   };
 
@@ -76,9 +78,11 @@ var Receipt = (function() {
 
   Receipt.prototype.getPromotion = function(cartItems) {
     var discount = 0;
+
     cartItems.forEach(function(cartItem) {
       discount += cartItem.promotionCount * cartItem.item.price;
     });
+
     return discount;
   };
 
@@ -104,6 +108,7 @@ var Receipt = (function() {
       '总计：' + formatPrice(this.getAmount(cartItems)) + '(元)\n' +
       '节省：' + formatPrice(this.getPromotion(cartItems)) + '(元)\n' +
       '**********************';
+
     return receiptString;
   };
 

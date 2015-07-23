@@ -34,6 +34,7 @@ CartItem.prototype.addToCartItems = function(cartItems, cartItem) {
 };
 
 CartItem.prototype.findItem = function(barcode) {
+
   var allItems = loadAllItems();
 
   for (var i = 0; i < allItems.length; i++) {
