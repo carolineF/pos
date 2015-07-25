@@ -2,9 +2,13 @@ function printReceipt(tags) {
   var scanner = new Scanner();
   var cart = new Cart();
   var pos = new Pos(scanner, cart);
-  pos.scan(tags);
 
-  var discounts = pos.cart.processPromotion();
+  tags.forEach(function(tag) {
+    pos.scan(tag);
+  });
 
-  pos.printReceipt(discounts);
+  var discounts = pos.processDiscount();
+
+  var receipt = pos.createReceipt(discounts);
+  console.log(receipt);
 }

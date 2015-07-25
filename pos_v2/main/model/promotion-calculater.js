@@ -1,25 +1,30 @@
-function PromotionCalculater(){
-
+function PromotionCalculater(discounts){
+  this.discounts = discounts || [];
 }
 
-PromotionCalculater.choosePromotion = function(promotionType, cartItems) {
+PromotionCalculater.prototype.addDiscount = function(spread, cartItem) {
+  var discount = new Discount(spread, cartItem);
+  this.discounts.push(discount);
+};
+
+PromotionCalculater.prototype.choosePromotion = function(promotionType, cartItems) {
 
   var barcodes = Promotion.getPromotionBarcodesWithType(promotionType);
 
-  return this.processPromotion(barcodes, cartItems);
+  this.processPromotion(barcodes, cartItems);
+
+  return this.discounts;
 };
 
-PromotionCalculater.processPromotion = function(barcodes, cartItems) {
-  var discount = new Discount();
+PromotionCalculater.prototype.processPromotion = function(barcodes, cartItems) {
 
-  cartItems.forEach(function(cartItem) {
-    var isPromotion = Promotion.isPromotion(barcodes, cartItem.item.barcode);
+  for(var i = 0; i < cartItems.length; i++) {
+    var isPromotion = Promotion.isPromotion(barcodes, cartItems[i].item.barcode);
 
     if(isPromotion) {
-      var ItemDiscount = Math.floor(cartItem.count / 3) * cartItem.item.price;
-      discount.addDiscount(ItemDiscount, cartItem.item);
+      var spread = Math.floor(cartItems[i].count / 3) * cartItems[i].item.price;
+      this.addDiscount(spread, cartItems[i].item);
     }
-  });
+  }
 
-  return discount.discounts;
 };

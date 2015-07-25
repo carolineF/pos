@@ -5,12 +5,12 @@ function Item(barcode, name, unit, price) {
   this.price = price || 0.00;
 }
 
-Item.loadAll = function() {
+Item.all = function() {
   return loadAllItems();
 };
 
-Item.findItem = function(barcode) {
-  var allItems = this.loadAll();
+Item.find = function(barcode) {
+  var allItems = this.all();
 
   for(var i = 0; i < allItems.length; i++) {
     if(allItems[i].barcode == barcode) {

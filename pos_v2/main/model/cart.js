@@ -22,7 +22,8 @@ Cart.prototype.findCartItem = function(cartItem) {
 };
 
 Cart.prototype.processPromotion = function() {
-  var discounts = PromotionCalculater.choosePromotion('BUY_TWO_GET_ONE_FREE', this.cartItems);
+  var promotionCalculater = new PromotionCalculater();
+  var discounts = promotionCalculater.choosePromotion('BUY_TWO_GET_ONE_FREE', this.cartItems);
 
   return discounts;
 };
@@ -35,4 +36,3 @@ Cart.prototype.getAmount = function() {
 
   return amount;
 };
-

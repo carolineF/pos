@@ -1,20 +1,12 @@
-function Discount(discounts) {
-  this.discounts = discounts || [];
+function Discount(spread, item) {
+  this.spread = spread;
+  this.item = item;
 }
 
-Discount.prototype.addDiscount = function(discount, item) {
-  this.discounts.push({
-    discount : discount,
-    item : item
-  });
-  return this.discounts;
-};
-
 Discount.getDiscount = function(discounts) {
-
   var amount = 0;
   discounts.forEach(function(discount){
-    amount += discount.discount;
+    amount += discount.spread;
   });
   return amount;
 };
@@ -22,8 +14,7 @@ Discount.getDiscount = function(discounts) {
 Discount.find = function(barcode, discounts) {
   for(var i = 0; i < discounts.length; i++) {
     if(discounts[i].item.barcode === barcode) {
-      return discounts[i].discount;
+      return discounts[i].spread;
     }
   }
 };
-

@@ -3,24 +3,18 @@ function Pos(scanner, cart) {
   this.cart = cart || new Cart();
 }
 
-Pos.prototype.scan = function(tags) {
-  for(var i = 0; i < tags.length; i++){
-    var cartItem = this.scanner.scan(tags[i]);
-    this.cart.addCartItem(cartItem);
-  }
+Pos.prototype.scan = function(tag) {
+  var cartItem = this.scanner.scan(tag);
+  this.cart.addCartItem(cartItem);
 };
 
-Pos.prototype.setCart = function(cart) {
-  this.cart = cart;
+Pos.prototype.processDiscount = function() {
+  return this.cart.processPromotion();
 };
 
-Pos.prototype.setScanner = function(scanner) {
-  this.scanner = scanner;
-};
-
-Pos.prototype.printReceipt = function(discounts) {
+Pos.prototype.createReceipt = function(discounts) {
   var receipt = new Receipt();
   var receiptString = receipt.createReceipt(this.cart, discounts);
 
-  console.log(receiptString);
+  return receiptString;
 };
